@@ -4,6 +4,7 @@ const path = require('node:path');
 const { QuickDB } = require("quick.db");
 const db = new QuickDB();
 const token = process.env['token']
+const keepAlive = require("./server")
 
 const client = new Client({intents: [
   GatewayIntentBits.Guilds, 
@@ -78,5 +79,6 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
+keepAlive();
 
 client.login(token);
