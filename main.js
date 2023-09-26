@@ -1,10 +1,10 @@
 const { Client, Events, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
+const { token, prefix } = require('./config.json');
+
 const { QuickDB } = require("quick.db");
 const db = new QuickDB();
-const token = process.env['token']
-const keepAlive = require("./server")
 
 const client = new Client({intents: [
   GatewayIntentBits.Guilds, 
@@ -58,27 +58,55 @@ for (const folder of commandFolders) {
 
 // executing slash commands
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+	if (interaction.isChatInputCommand()) {
+			const command = interaction.client.commands.get(interaction.commandName);
 
-	const command = interaction.client.commands.get(interaction.commandName);
+			if (!command) {
+				console.error(`No command matching ${interaction.commandName} was found.`);
+				return;
+			}
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
+			try {
+				await command.execute(interaction, client, db);
+			} catch (error) {
+				console.error(`Error executing ${interaction.commandName}`);
+				console.error(error);
+			}
+	} else if(interaction.isButton()) {
+		const id = interaction.customId
+		if(id.includes("role_")) {
+			const _index = id.indexOf("role_");
+			const roleID = id.substring(_index).substring(5);
+			console.log(id)
+			console.log(roleID);
+			const role = interaction.guild.roles.cache.get(roleID);
 
-	try {
-		await command.execute(interaction, client, db);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			if(!role) {
+				await interaction.reply({ content: `role not found ask the server owner to update!`, ephemeral: true })
+				return;
+			}
+			if(!interaction.member.roles.cache.has(roleID)) {
+				interaction.member.roles.add(role)
+					.then( async () => {
+							await interaction.reply({ content: `you now have the ${role.name}`, ephemeral: true })
+					})
+					.catch( async () => {
+							await interaction.reply({ content: `cannot give role ${role.name} notify the server owner!` })	
+					})
+			}
+			else {
+				interaction.member.roles.remove(role).then( async () => {
+						await interaction.reply({ content: `removed the ${role.name} from you!`, ephemeral: true })
+				})
+				.catch( async() => {
+						await interaction.reply({ content: `cannot remove the role ${role.name} notify the server owner!` })
+				})
 		}
+	} else {
+			await interaction.deferReply("error unknown interaction please report this!");
+	}
 	}
 });
 
-keepAlive();
 
 client.login(token);
