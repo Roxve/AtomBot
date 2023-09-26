@@ -1,7 +1,7 @@
 const { Client, Events, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const token = process.env("token")
+const token = process.env["token"]
 
 const { QuickDB } = require("quick.db");
 const db = new QuickDB();
