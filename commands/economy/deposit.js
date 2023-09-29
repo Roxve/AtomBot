@@ -1,9 +1,8 @@
-const { CreateProfile } = require("../../etc/CreateProfile.js")
+import { CreateProfile } from '../../etc/CreateProfile.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import discord from 'discord.js';
 
-const { SlashCommandBuilder, PermissionFlagsBits} = require('discord.js');
-const discord = require('discord.js')
-
-module.exports = {
+export default {
 	data: new SlashCommandBuilder()
 		.setName('deposit')
 		.addNumberOption( opt =>
@@ -22,7 +21,7 @@ module.exports = {
 		const isID = await db.get(`${id}`)
 
 		if (!isID) { await CreateProfile(db, id) }
-		const amount = interaction.options.getNumber('amount') ?? await db.get(`${id}.money`);
+		const amount = interaction.options.getNumber('amount') ?? (await db.get(`${id}.money`));
 		const user_money = await db.get(`${id}.money`)
 		
 		if(amount > user_money) { await interaction.reply(`cannot deposit ${amount} to your bank...`); return; }

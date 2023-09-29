@@ -1,9 +1,8 @@
-const { CreateProfile } = require("../../etc/CreateProfile.js")
+import { CreateProfile } from '../../etc/CreateProfile.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import discord from 'discord.js';
 
-const { SlashCommandBuilder, PermissionFlagsBits} = require('discord.js');
-const discord = require('discord.js')
-
-module.exports = {
+export default {
 	data: new SlashCommandBuilder()
 		.setName('set-money')
 		.addUserOption(opt =>

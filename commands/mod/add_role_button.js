@@ -1,8 +1,14 @@
-const { addButton, getButtons } = require("../../etc/vars");
+import { addButton, getButtons } from '../../etc/vars.js';
 
-const { SlashCommandBuilder, ActionRowBuilder,PermissionFlagsBits, ComponentBuilder, MessageActionRow, MessageButton, ButtonBuilder, ButtonStyle } = require('discord.js');
+import {
+    SlashCommandBuilder,
+    ActionRowBuilder,
+    PermissionFlagsBits,
+    ButtonBuilder,
+    ButtonStyle,
+} from 'discord.js';
 
-module.exports = {
+export default {
 	data: new SlashCommandBuilder()
 		.setName('add-role-button')
 		.addRoleOption( opt =>
@@ -22,7 +28,7 @@ module.exports = {
 			.setRequired(true)
 			.setDescription("msg to add button to")
 		)
-		.setDescription('add a button which gaves roles by click on on a bot message created by (/create-role-msg)!')
+		.setDescription('add a button which gaves roles by click on on a bot message created by (/create-bot-msg)!')
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 	async execute(interaction, client, db) {
 		const msg = interaction.options.getString("message_id")

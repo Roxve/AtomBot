@@ -1,11 +1,26 @@
-const { Client, Events, Collection, GatewayIntentBits } = require('discord.js');
-const fs = require('node:fs');
-const path = require('node:path');
+import { Client, Events, Collection, GatewayIntentBits } from 'discord.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { QuickDB } from 'quick.db';
+import { fileURLToPath } from 'url';
+import { ChatGPTAPI } from 'chatgpt';
+
 const token = process.env["token"]
+const apiKey = process.env["apiKey"]
 
-const { QuickDB } = require("quick.db");
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
+
 const db = new QuickDB();
-
+//init the ai api
+const api = new ChatGPTAPI({
+	apiKey,
+	apiBaseUrl : "https://api.pawan.krd/v1",
+	completionParams: {
+		model: "pai-001-beta"
+	}
+})
 const client = new Client({intents: [
   GatewayIntentBits.Guilds, 
   GatewayIntentBits.MessageContent, 
@@ -45,18 +60,15 @@ for (const folder of commandFolders) {
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
+		const command = await import(filePath);
 		// Set a new item in the Collection with the key as the command name and the value as the exported module
-		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
+		client.commands.set(command.default.data.name, command.default);
+		
 	}
 }
 
 
-// executing slash commands
+// executing interactions
 client.on(Events.InteractionCreate, async interaction => {
 	if (interaction.isChatInputCommand()) {
 			const command = interaction.client.commands.get(interaction.commandName);
@@ -67,7 +79,7 @@ client.on(Events.InteractionCreate, async interaction => {
 			}
 
 			try {
-				await command.execute(interaction, client, db);
+				await command.execute(interaction, client, db, api);
 			} catch (error) {
 				console.error(`Error executing ${interaction.commandName}`);
 				console.error(error);
@@ -85,27 +97,28 @@ client.on(Events.InteractionCreate, async interaction => {
 				await interaction.reply({ content: `role not found ask the server owner to update!`, ephemeral: true })
 				return;
 			}
+
+
 			if(!interaction.member.roles.cache.has(roleID)) {
 				interaction.member.roles.add(role)
 					.then( async () => {
-							await interaction.reply({ content: `you now have the ${role.name}`, ephemeral: true })
+							await interaction.reply({ content: `you now have the ${role.name} role!`, ephemeral: true })
 					})
 					.catch( async () => {
 							await interaction.reply({ content: `cannot give role ${role.name} notify the server owner!` })	
 					})
-			}
-			else {
+			} else {
 				interaction.member.roles.remove(role).then( async () => {
-						await interaction.reply({ content: `removed the ${role.name} from you!`, ephemeral: true })
+						await interaction.reply({ content: `removed the ${role.name} role from you!`, ephemeral: true })
 				})
 				.catch( async() => {
 						await interaction.reply({ content: `cannot remove the role ${role.name} notify the server owner!` })
 				})
 		}
 	} else {
-			await interaction.deferReply("error unknown interaction please report this!");
+			await interaction.reply({ content: "error unknown interaction please report this!", ephemeral: true });
 	}
-	}
+ }
 });
 
 

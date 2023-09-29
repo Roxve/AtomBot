@@ -1,21 +1,20 @@
-const { CreateProfile } = require("../../etc/CreateProfile.js")
+import { CreateProfile } from '../../etc/CreateProfile.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import discord from 'discord.js';
 
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const discord = require('discord.js')
-
-module.exports = {
+export default {
 	data: new SlashCommandBuilder()
-		.setName('blance')
+		.setName('balance')
 		.addUserOption(opt =>
 			opt
 			.setName('user')
-			.setRequired(true)
-			.setDescription("the user to show blance of")
+			.setRequired(false)
+			.setDescription("the user to show balance of")
 		)
-		.setDescription('shows a user blance!'),
+		.setDescription('shows a user balance!'),
 	async execute(interaction, client,db) {
 
-		const user = interaction.options.getUser('user')
+		const user = interaction.options.getUser('user') ?? interaction.user
 		const id = `${interaction.guildId}_${user.id}`
 		const isID = await db.get(`${id}`)
 
