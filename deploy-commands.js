@@ -1,5 +1,7 @@
 import { REST, Routes } from 'discord.js';
 import fs from 'node:fs';
+import { fileURLToPath } from 'url';
+
 import path from 'node:path';
 const __filename = fileURLToPath(import.meta.url);
 
