@@ -4,6 +4,7 @@ import path from 'node:path';
 import { QuickDB } from 'quick.db';
 import { fileURLToPath } from 'url';
 import { ChatGPTAPI } from 'chatgpt';
+import { exec } from 'child_process';
 
 const token = process.env["token"]
 const apiKey = process.env["apiKey"]
@@ -120,7 +121,8 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
  }
 });
-
+exec(
+`curl --location --request POST 'https://api.pawan.krd/resetip' \> --header 'Authorization: Bearer ${apikey}`)
 
 client.login(token);
 //...Discord Bot Code Above ^^
