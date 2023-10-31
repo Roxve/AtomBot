@@ -4,6 +4,7 @@ import path from 'node:path';
 import { QuickDB } from 'quick.db';
 import { fileURLToPath } from 'url';
 import { ChatGPTAPI } from 'chatgpt';
+import express from 'express'
 
 const token = process.env["token"]
 const apiKey = process.env["apiKey"]
@@ -18,7 +19,7 @@ const api = new ChatGPTAPI({
 	apiKey,
 	apiBaseUrl : "https://api.pawan.krd/v1",
 	completionParams: {
-		model: "pai-001-beta"
+		model: "pai-001-light-beta"
 	}
 })
 const client = new Client({intents: [
@@ -125,7 +126,6 @@ client.on(Events.InteractionCreate, async interaction => {
 client.login(token);
 //...Discord Bot Code Above ^^
 
-const express = require('express')
 const app = express();
 const port = 3000;
 app.get('/', (req, res) => {

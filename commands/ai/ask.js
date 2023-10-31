@@ -20,13 +20,13 @@ export default {
       You answer as concisely as possible for each response, if its programming related you add specifc code tag to the snippet. 
       Current date: ${new Date().toISOString()}
 			USER (actual name please refer to them as that) : ${interaction.user.username}\n\n`,
-			onProgress: async (partialRes) => await interaction.editReply(partialRes.text)
+			/* onProgress: async (partialRes) => await interaction.editReply(partialRes.text) */
 		})
 		console.log(interaction.user.id)
 		console.log(await db.get(`${interaction.user.id}.aiID`))
 		
 		await db.set(`${interaction.user.id}.aiID`, res.id)
 		console.log(await db.get(`${interaction.user.id}.aiID`))
-		await interaction.editReply(res.text + "\n|END|");
+		await interaction.editReply(res.text);
 	},
 };
