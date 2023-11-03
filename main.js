@@ -124,8 +124,6 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
  }
 });
-exec(
-`curl --location --request POST 'https://api.pawan.krd/resetip' \> --header 'Authorization: Bearer ${apikey}'`)
 
 client.login(token);
 //...Discord Bot Code Above ^^
