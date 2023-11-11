@@ -8,12 +8,18 @@ async def balance(ctx, user: discord.User = None):
         user = ctx.user
     embed = discord.Embed(
         #title=f'{user.name}',
-        color=discord.Color.blue()
+        color=discord.Color.red()
     )
     await isSetup(ctx.guild.id ,user.id)
     embed.set_author(name=user.name, icon_url=user.avatar)
+    
     money = await get_data(ctx.guild.id ,user.id, "money")
+    bank = await get_data(ctx.guild.id ,user.id, "bank")
+        
     embed.add_field(name='Money:', value=f'🪙 {money}')
+    embed.add_field(name='Bank:', value=f'🏦 {bank}')    
+    embed.add_field(name='Total:', value=f'🪙 {money + bank}')    
+    
     await ctx.respond(embed=embed)
 
 @bot.slash_command(name="set-money", description="sets user money",default_member_permissions=discord.Permissions(administrator=True))
@@ -26,7 +32,27 @@ async def set_money(ctx, money: int, user: discord.User = None):
     await set_data(ctx.guild.id ,user.id, 'money',money)
     await reply(ctx, content=f'successfully set {user} money to {money}')
 
-
+@bot.slash_command(name="depoist", description="depiost a money into your bank so you cannot get robbed!")
+async def depoist(ctx, amount: int = None):
+    guild = ctx.guild.id
+    
+    if await isTimeouted(guild, ctx.user.id, 'depoist'):
+        await reply(ctx, content=f'you have to wait for 5 hours to depoist!')
+        return
+    money = await get_data(guild, ctx.user.id, 'money')
+    amount = amount or money
+    amount = abs(amount) 
+    if amount > money:
+        await reply(ctx, content=f'cannot depoist {amount} to your bank! you only have {money}!')
+        return
+    
+    bank = await get_data(guild, ctx.user.id, 'bank')
+    
+    await set_data(guild, ctx.user.id, 'bank', bank + money)
+    await set_data(guild, ctx.user.id, 'money', money - amount)
+    await timeoutUsage(guild, ctx.user.id, "depoist", 18000000)
+    await reply(ctx, content=f"successfully depoisted {amount} to your bank!")
+    
 @bot.slash_command(name="rob", description="robs a users money")
 async def rob(ctx, user: discord.User):
     robber = ctx.user    

@@ -30,8 +30,7 @@ async def on_ready():
 async def on_message(msg):
     if msg.author.bot:
         return
-    if "spark" in msg.content.lower():
-        await msg.reply('🔥')
+    
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
     if interaction.is_component():
