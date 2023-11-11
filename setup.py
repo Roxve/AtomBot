@@ -22,10 +22,10 @@ async def reply(ctx , content="", embeds=[]):
     embed = discord.Embed(
         #title=command_name,
         description=content,
-        colour=discord.Color.blue()
+        colour=discord.Color.red()
     )
-    embed.set_author(name=f'/{command_name}', icon_url=ctx.user.avatar)
-    embed.set_footer(text=f'executed by {ctx.user.name}')
+    embed.set_author(name=f'> /{command_name}', icon_url=ctx.user.avatar)
+    embed.set_footer(text=f'> executed by {ctx.user.name} | _Atom by void*@_0bits')
     
     await ctx.respond(embed=embed)
 
@@ -39,6 +39,8 @@ async def get_data(guild_id,obj_id, obj_prop):
 async def setup_usr(guild_id,user_id): 
     if not await get_data(guild_id, user_id, 'money'):
         await set_data(guild_id,user_id, 'money', 0)
+    if not await get_data(guild_id, user_id, 'bank'):
+        await set_data(guild_id,user_id, 'bank', 0)
     if not await get_data(guild_id, user_id, 'shifts'):
         await set_data(guild_id,user_id, 'shifts', 0)  
     if not await get_data(guild_id, user_id, 'job'):
@@ -53,7 +55,7 @@ async def SetupGuild(guild_id):
         await set_data(guild_id, '', 'jobs',
         {
             "developer": {"min": 150, "max": 600, "shifts": 80}, 
-            "sparkify developer": {"min": 500,"max": 850, "shifts": 120}, 
+            "cool developer": {"min": 500,"max": 850, "shifts": 120}, 
             "janitor": {"min": 50, "max": 200, "shifts": 0},
             "driver": {"min": 100, "max": 400, "shifts": 40}
         })
