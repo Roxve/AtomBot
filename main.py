@@ -59,6 +59,6 @@ async def on_interaction(interaction: discord.Interaction):
     else:
         await bot.process_application_commands(interaction)
  
-
+keep_alive()
 bot.run(token)
 print("Exit 0")
