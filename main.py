@@ -3,6 +3,21 @@ from setup import *
 from commands.etc import *
 from commands.economy import *
 from commands.mod import *
+from flask import Flask
+from threading import Thread
+
+app = Flask('')
+
+@app.route('/')
+def main():
+  return "Your Bot Is Ready"
+
+def run():
+  app.run(host="0.0.0.0", port=8000)
+
+def keep_alive():
+  server = Thread(target=run)
+  server.start()
 
 @bot.event
 async def on_ready():
