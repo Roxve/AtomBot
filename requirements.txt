@@ -1,3 +1,0 @@
-pickledb
-py-cord
-flask

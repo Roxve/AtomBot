@@ -1,5 +1,3 @@
-__pycache__
-.pythonlibs 
-poetry.lock 
-pyproject.toml
-.upm
+env.sh
+atom
+src/atom
