@@ -5,24 +5,32 @@ import strutils
 import settings
 import options
 
-proc reply*(i: Interaction, msg: string) {.async.} =
+proc reply_embed(name: string, icon: string, msg: string): Embed =
+    let author = EmbedAuthor(name: name, icon_url: some icon)
+    let footer = EmbedFooter(text: "made by @_0bytes aka Rŭxve")
+    Embed(author: some author, description: some msg, footer: some footer)
+
+proc reply*(i: Interaction, msg: string) {.async.} =     
+    let embed = reply_embed(i.member.get.user.username, i.member.get.user.avatarUrl("png", 1024), msg)
     echo i
     let response = InteractionResponse(
         kind: irtChannelMessageWithSource,
         data: some InteractionApplicationCommandCallbackData(
-            content: msg
+            embeds: @[embed]
         )
     )
     await discord.api.createInteractionResponse(i.id, i.token, response) 
      
 proc reply*(m: Message, msg: string) {.async.} =
-    discard await discord.api.sendMessage(m.channelId, msg)
+    let embed = reply_embed(m.author.username, m.author.avatarUrl("png", 1024), msg)
+
+    discard await reply(m, "", @[embed], mention = true)
     
 include cmds
 
 
-proc onDispatch(s: Shard, evt: string, data: JsonNode) {.event(discord).} =
-    echo data.pretty()
+# proc onDispatch(s: Shard, evt: string, data: JsonNode) {.event(discord).} =
+#     echo data.pretty()
 
 proc onReady (s: Shard, r: Ready) {.event(discord).} =
     await cmd.registerCommands()
